@@ -1,0 +1,41 @@
+version: 1
+formatters:
+  simple:
+    format: '[%(asctime)s][%(levelname)s][%(name)s] - %(message)s'
+  precise:
+    format: '[%(asctime)s][%(levelname)s][%(name)s] - %(message)s'
+handlers:
+  console:
+    class:     logging.StreamHandler
+    formatter: simple
+    level:     INFO
+    filters:   []
+    stream:    ext://sys.stdout
+  single-file:
+    class:     logging.FileHandler
+    formatter: precise
+    filename:  debug.log
+    encoding:  utf16
+  rotating-file:
+    class:     logging.handlers.RotatingFileHandler
+    formatter: precise
+    filename:  rotating-log.log
+    encoding:  utf16
+    maxBytes:  10485760
+    backupCount: 8
+  none:
+    class: logging.NullHandler
+    formatter: simple
+loggers:
+  prod:
+    level:     INFO
+    handlers:  [console, rotating-file]
+  dev:
+    level:     DEBUG
+    handlers:  [console, single-file]
+  none:
+    level:      INFO
+    handlers:  [none]
+root:
+  level:    DEBUG
+  handlers: [console]

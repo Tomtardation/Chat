@@ -55,8 +55,8 @@ class ByteStream():
     
     def writeString(self, string):
         self.writeShort(len(string), signed = False)
-        #byte_array = String(string)
-        for x in Bytes(string.encode("utf-8")):
+        byte_array = Bytes(string.encode("utf-8"))
+        for x in byte_array:
             self.write(x)
 
     def __writeArray__(self, array):
@@ -67,7 +67,4 @@ class ByteStream():
     def __writeNumber__(self, value, size, signed = True):
         array = value.to_bytes(size, byteorder='big', signed=signed)
         self.__writeArray__(array)
-        # for i in xrange(0, size):
-        #     self.write((value << ((size - i - 1) << 2)) & 0xF)
-        #     self.size += 1
     

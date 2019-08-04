@@ -1,0 +1,8 @@
+version: 1
+environment: dev
+
+dev:
+  logging: on
+
+prod:
+  logging: true
