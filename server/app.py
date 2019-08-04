@@ -2,9 +2,9 @@ import sys
 sys.path.append("")
 
 import asyncio
-from byte_stream import ByteStream
+from utils.byte_stream import ByteStream
 from concurrent.futures import TimeoutError
-from config.configuration_loader import ConfigurationLoader
+from utils.configuration_loader import ConfigurationLoader
 import time
 import traceback
 import websockets

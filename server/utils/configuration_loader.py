@@ -29,11 +29,9 @@ class ConfigurationLoader:
         return self.configurations[path][self.environment][key] if self.environment in self.configurations[path] and key in self.configurations[path][self.environment] else None
     
     def getLogger(self):
-        print("Test")
         _from = inspect.stack()[1]
         _module = inspect.getmodule(_from[0])
 
-        print("Test2")
         logger = logging.getLogger(_module.__name__)
         logger.propagate = False if 'logging' in self.configurations['config/config.yaml'][self.environment] and not self.configurations['config/config.yaml'][self.environment]['logging'] else True
         print(logger.propagate)
