@@ -4,17 +4,20 @@ sys.path.append("")
 import asyncio
 from utils.byte_stream import ByteStream
 from concurrent.futures import TimeoutError
+import os
 from utils.configuration_loader import ConfigurationLoader
+import ssl
 import time
 import traceback
 import websockets
 from handlers.packet_manager import PacketManager
+import pathlib
 
 
 # Variables
 cl = ConfigurationLoader()
 log = cl.getLogger()
-handlers = PacketManager(log)
+handlers = PacketManager(cl, log)
 loop = asyncio.get_event_loop()
 
 
@@ -39,8 +42,15 @@ async def connection(socket, path):
 
 # Main
 if __name__ == '__main__':
+    log.info("Fetching SSL certificates.")
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    localhost_cert = os.path.relpath(cl.get('ssl_cert'))
+    localhost_key = os.path.relpath(cl.get('ssl_key'))
+    #print(localhost_pem, localhost_key, ssl_context)
+    ssl_context.load_cert_chain(localhost_cert, keyfile=localhost_key)
+
     log.info("Starting websocket.")
-    server = websockets.serve(connection, "localhost", 8766)
+    server = websockets.serve(connection, "localhost", 8766, ssl=ssl_context)
 
     log.info("Starting main event loop.")
     try:

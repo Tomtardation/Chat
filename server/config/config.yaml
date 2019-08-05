@@ -1,8 +1,15 @@
 version: 1
 environment: dev
+major: 0
+minor: 1
+build: 1
 
 dev:
   logging: on
+  ssl_cert: 'localhost.cert'
+  ssl_key: 'localhost.key'
 
 prod:
   logging: true
+  ssl_cert: 'server.cert'
+  ssl_key: 'server.key'

@@ -1,0 +1,24 @@
+#login {
+    text-align: center;
+    display: block;
+}
+
+#inputs {
+    display: inline-block;
+}
+
+#login input {
+    display: block;
+    margin: 10px;
+}
+
+#login > input {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+}
+
+#inputs input {
+    background-color: white;
+    border-radius: 5px;
+}

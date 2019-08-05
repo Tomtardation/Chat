@@ -31,7 +31,6 @@ class BinaryWriter {
     writeShort(short) {
         this.write((short >> 8) & 0xFF);
         this.write((short >> 0) & 0xFF);
-        console.log("SHORT", (short >> 4) & 0xF, (short >> 0) & 0xF)
     }
 
     writeString(string) {

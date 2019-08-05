@@ -1,19 +1,21 @@
 from utils.byte_stream import ByteStream
-#from config.configuration_loader import ConfigurationLoader
 from handlers.handler import Handler
 from handlers.receive.login import Login
+from handlers.receive.version_check import VersionCheck
 from handlers.send.login_acknowledge import LoginAcknowledgement
+from handlers.send.version_acknowledge import VersionAcknowledgement
 
 class PacketManager():
-    def __init__(self, log):
+    def __init__(self, config, log):
         self.__recvhandlers__ = {}
         self.__sendhandlers__ = {}
-        #self.configuration = ConfigurationLoader()
+        self.cl = config
         self.log = log
-        #self.log = self.configuration.getLogger()
 
+        self.__add__(VersionCheck(self.cl, self.log), self.__recvhandlers__)
         self.__add__(Login(self.log), self.__recvhandlers__)
 
+        self.__add__(VersionAcknowledgement(self.log), self.__sendhandlers__)
         self.__add__(LoginAcknowledgement(self.log), self.__sendhandlers__)
     
 
@@ -23,7 +25,6 @@ class PacketManager():
         else:
             raise Exception("Cannot add non-handler to handler service.")
     
-
     def getRecvPacket(self, code):
         if code in self.__recvhandlers__:
             return self.__recvhandlers__[code]
@@ -34,7 +35,6 @@ class PacketManager():
             return self.__sendhandlers__[code]
         return None
 
-
     async def handle(self, packet, socket):
         code = packet.readShort()
 
@@ -42,7 +42,6 @@ class PacketManager():
             await self.__recvhandlers__[code].execute(self, packet, socket)
         else:
             self.log.error("Found unhandled packet code ({}): {}".format(code, ''.join('{:02x}'.format(x) for x in packet.toByteArray())))
-    
 
     async def send(self, code, socket, *args):
         packet_struct = self.getSendPacket(code)
