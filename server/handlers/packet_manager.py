@@ -4,6 +4,7 @@ from handlers.receive.login import Login
 from handlers.receive.version_check import VersionCheck
 from handlers.send.login_acknowledge import LoginAcknowledgement
 from handlers.send.version_acknowledge import VersionAcknowledgement
+import logging
 
 class PacketManager():
     def __init__(self, config, log):
@@ -35,18 +36,18 @@ class PacketManager():
             return self.__sendhandlers__[code]
         return None
 
-    async def handle(self, packet, socket):
-        code = packet.readShort()
+    async def handle(self, websocket, request, message):
+        code = message.buffer.readShort()
 
         if code in self.__recvhandlers__:
-            await self.__recvhandlers__[code].execute(self, packet, socket)
+            await self.__recvhandlers__[code].execute(self, websocket, request, message.buffer)
         else:
-            self.log.error("Found unhandled packet code ({}): {}".format(code, ''.join('{:02x}'.format(x) for x in packet.toByteArray())))
+            logging.error("Found unhandled packet code ({}): {}".format(code, ''.join('{:02x}'.format(x) for x in message.buffer.toByteArray())))
 
-    async def send(self, code, socket, *args):
+    async def send(self, code, websocket, *args):
         packet_struct = self.getSendPacket(code)
         if packet_struct is not None:
             data = ByteStream()
             data.writeShort(code)
-            await packet_struct.execute(data, socket, *args)
-            await socket.send(data.toByteArray())
+            await packet_struct.execute(data, *args)
+            await websocket.send_bytes(data.toByteArray())

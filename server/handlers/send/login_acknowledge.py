@@ -10,12 +10,12 @@ class LoginAcknowledgement(Handler):
     def code(self):
         return 0x04
 
-    async def execute(self, packet, socket, error_code, id):
+    async def execute(self, packet, error_code, id):
         packet.writeShort(error_code)
         if error_code == 0 and id is not None:
             packet.writeInteger(id)
-            self.log.info('User ({}) at {} acknowledged login.'.format(id, socket.remote_address))
+
+            #host, port = request.transport.get_extra_info('peername')
+            #self.log.info('User ({}) at {}:{} acknowledged login.'.format(id, host, port))
 
             # TODO: send room data to user.
-        else:
-            self.log.warn('User at {} attempted login.'.format(socket.remote_address))

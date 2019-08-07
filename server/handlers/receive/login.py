@@ -15,10 +15,10 @@ class Login(Handler):
     def code(self):
         return 0x01
 
-    async def execute(self, manager, packet, socket):
-        username = packet.readString()
-        password = packet.readString()
-        self.log.info('User ({}) at {} logged in.'.format(username, socket.remote_address))
+    async def execute(self, manager, websocket, request, message):
+        username = message.readString()
+        password = message.readString()
+        #self.log.info('User ({}) at {} logged in.'.format(username, socket.remote_address))
         print(password)
 
         # TODO: fetch salt & hash from database
@@ -32,4 +32,8 @@ class Login(Handler):
         error_code = 0 if random.randint(0, 100) < 50 else 1
 
         id = random.randint(0, 100)
-        await manager.send(0x04, socket, error_code, id if error_code == 0 else None)
+        await manager.send(0x04, websocket, error_code, id if error_code == 0 else None)
+
+        if error_code != 0:
+            host, port = request.transport.get_extra_info('peername')
+            self.log.warn('User at {}:{} attempted login.'.format(host, port))
